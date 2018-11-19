@@ -11,10 +11,12 @@ const LAYOUT;
 /*!!!!!!!!!!!GLOBAL CONST START!!!!!!!!!!!*/
 // EMBER API Access - if you need access to any of the Ember API's add them here in the same manner rather then import them via modules, since the dependencies exist in rancher we dont want to expor the modules in the amd def
 const computed     = Ember.computed;
+const observer     = Ember.observer;
 const get          = Ember.get;
 const set          = Ember.set;
 const alias        = Ember.computed.alias;
 const service      = Ember.inject.service;
+const all          = Ember.RSVP.all;
 
 /*!!!!!!!!!!!GLOBAL CONST END!!!!!!!!!!!*/
 
@@ -26,8 +28,10 @@ export default Ember.Component.extend(ClusterDriver, {
   configField: '%%DRIVERNAME%%EngineConfig', // 'googleKubernetesEngineConfig'
   app:         service(),
   router:      service(),
+/*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
 
   init() {
+    /*!!!!!!!!!!!DO NOT CHANGE START!!!!!!!!!!!*/
     // This does on the fly template compiling, if you mess with this :cry:
     const decodedLayout = window.atob(LAYOUT);
     const template      = Ember.HTMLBars.compile(decodedLayout, {
@@ -36,30 +40,23 @@ export default Ember.Component.extend(ClusterDriver, {
     set(this,'layout', template);
 
     this._super(...arguments);
+    /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
 
-  },
-
-  config: computed('configField', function() {
-    const field = `cluster.${  get(this, 'configField') }`;
-
-    return get(this, field);
-  }),
-  /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
-
-  // Write your component here, starting with setting 'model' to a cluster with your config populated
-  bootstrap: function() {
-    // bootstrap is called by rancher ui on 'init', you're better off doing your setup here rather then the init function to ensure everything is setup correctly
     let config      = get(this, 'config');
     let configField = get(this, 'configField');
 
+
     if ( !config ) {
       config = this.get('globalStore').createRecord({
-        type: configField,
+        type:               configField,
       });
-    }
 
-    set(this, `cluster.${ configField }`, config);
+      set(this, 'cluster.%%DRIVERNAME%%EngineConfig', config);
+    }
   },
+
+  config: alias('cluster.%%DRIVERNAME%%EngineConfig'),
+
 
   actions: {
     save() {},
@@ -75,7 +72,7 @@ export default Ember.Component.extend(ClusterDriver, {
     // Get generic API validation errors
     this._super();
     var errors = get(this, 'errors')||[];
-    if ( !get(this, 'model.name') ) {
+    if ( !get(this, 'cluster.name') ) {
       errors.push('Name is required');
     }
 
