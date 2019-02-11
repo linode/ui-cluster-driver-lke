@@ -17,7 +17,7 @@ const BASE          = 'component/';
 const DIST          = 'dist/';
 const TMP           = 'tmp/';
 const ASSETS        = 'assets/';
-const DRIVER_NAME   = argv.name || pkg.name.replace(/^ui-driver-/,'');
+const DRIVER_NAME   = argv.name || pkg.name.replace(/^ui-cluster-driver-/,'');
 
 console.log('Driver Name:', DRIVER_NAME);
 
