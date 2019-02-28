@@ -10,9 +10,7 @@ const pkg           = require('./package.json');
 const fs            = require('fs');
 const replaceString = require('replace-string');
 
-
 const NAME_TOKEN    = '%%DRIVERNAME%%';
-
 const BASE          = 'component/';
 const DIST          = 'dist/';
 const TMP           = 'tmp/';
@@ -26,39 +24,43 @@ if (!DRIVER_NAME) {
   process.exit(1);
 }
 
-gulp.task('default', ['build']);
-
-gulp.task('watch', function() {
-  gulp.watch([`./${ BASE }*.js`, `./${ BASE }*.hbs`, `./${ BASE }*.css`], ['build']);
-});
-
-gulp.task('clean', function() {
-  return gulp.src([`${DIST}*.js`, `${DIST}*.css`, `${DIST}*.hbs`, `${TMP}*.js`, `${TMP}*.css`, `${TMP}*.hbs`,], {read: false})
+gulp.task('clean', function () {
+  return gulp.src([`./dist`, `./tmp`,], {read: false})
     .pipe(clean());
 });
 
-gulp.task('assets', ['styles'], function() {
+gulp.task('styles', gulp.series('clean', function () {
+  return gulp.src([`${ BASE }**.css`])
+    .pipe(replace(NAME_TOKEN, DRIVER_NAME))
+    .pipe(gulpConcat(`component.css`, {newLine: '\n'}))
+    .pipe(gulp.dest(DIST));
+}));
+
+gulp.task('assets', gulp.series('styles', function () {
   return gulp.src(`${ ASSETS }*`)
     .pipe(gulp.dest(DIST));
-});
+}));
 
-gulp.task('build', ['compile']);
-
-gulp.task('babel', ['assets'], function() {
-
+gulp.task('babel', gulp.series('assets', function () {
   const opts = {
-    'presets': [
-      ['env', {
-        'targets': {
-          'browsers': ['> 1%']
-        }
-      }]
+    presets: [
+      [
+        "@babel/preset-env", {
+          targets: {
+            browsers: ["> 1%"]
+          }
+        }]
     ],
-    'plugins': [ 'add-module-exports',
-                 [ 'transform-es2015-modules-amd', {'noInterop': true} ]
-               ],
-    'moduleId': `shared/components/cluster-driver/driver-${ DRIVER_NAME }/component`,
-    'comments': false
+    plugins: [
+      "add-module-exports",
+      [
+        "transform-es2015-modules-amd", {
+          "noInterop": true,
+        }
+      ]
+    ],
+    comments: false,
+    moduleId: `shared/components/cluster-driver/driver-${DRIVER_NAME}/component`
   };
 
   let hbs = fs.readFileSync(`${BASE}template.hbs`, 'utf8');
@@ -73,65 +75,71 @@ gulp.task('babel', ['assets'], function() {
     .pipe(replace('const LAYOUT;', `const LAYOUT = '${ hbs }';`))
     .pipe(replace(NAME_TOKEN, DRIVER_NAME))
     .pipe(babel(opts))
-    .pipe(gulpConcat(`component.js`,{newLine: '\n;'}))
+    .pipe(gulpConcat(`component.js`,{newLine: '\n'}))
     .pipe(gulp.dest(TMP));
-});
+}));
 
-gulp.task('rexport', ['babel'], function() {
-  const rexpOpts = {
-    'presets': [
-      ['env', {
-        'targets': {
-          'browsers': ['> 1%']
-        }
-      }]
+gulp.task('rexport', gulp.series('babel', function () {
+  const babelOpts = {
+    presets: [
+      [
+        "@babel/preset-env", {
+          targets: {
+            browsers: ["> 1%"]
+          }
+        }]
     ],
-    'plugins': [ 'add-module-exports',
-                 [ 'transform-es2015-modules-amd', { 'noInterop': true } ]
-               ],
-    'moduleId': `ui/components/cluster-driver/driver-${ DRIVER_NAME }/component`,
+    plugins: [
+      "add-module-exports",
+      [
+        "transform-es2015-modules-amd", {
+          "noInterop": true,
+        }
+      ]
+    ],
+    comments: false,
+    moduleId:  `ui/components/cluster-driver/driver-${ DRIVER_NAME }/component`,
   }
-
   return gulp.src([
     `${BASE}rexport.js`
   ])
     .pipe(replace(NAME_TOKEN, DRIVER_NAME))
-    .pipe(babel(rexpOpts))
-    .pipe(gulpConcat(`rexport.js`, {newLine: '\n;'}))
+    .pipe(babel(babelOpts))
+    .pipe(gulpConcat(`rexport.js`, { newLine: ';\n' }))
     .pipe(gulp.dest(TMP));
-});
+}));
 
-gulp.task('alias', ['rexport'], function() {
+gulp.task('alias', gulp.series('rexport', function() {
   return gulp.src([
     `${BASE}alias.js`
   ])
     .pipe(replace(NAME_TOKEN, DRIVER_NAME))
-    .pipe(gulpConcat(`alias.js`, {newLine: '\n;'}))
+    .pipe(gulpConcat(`alias.js`, {newLine: '\n'}))
     .pipe(gulp.dest(TMP));
-});
+}));
 
-gulp.task('compile', ['alias'], function() {
+gulp.task('compile', gulp.series('alias', function() {
   return gulp.src([
     `${TMP}component.js`,
     `${TMP}rexport.js`,
     `${TMP}alias.js`,
   ])
-    .pipe(gulpConcat(`component.js`, {newLine: '\n;'}))
+    .pipe(gulpConcat(`component.js`, {newLine: '\n'}))
     .pipe(gulp.dest(DIST));
+}));
+
+gulp.task('build', gulp.series('compile'));
+
+gulp.task('watch', function () {
+  return gulp.watch([`./${ BASE }*.js`, `./${ BASE }*.hbs`, `./${ BASE }*.css`], gulp.parallel('build'));
 });
 
-
-gulp.task('styles', ['clean'], function() {
-  return gulp.src([`${ BASE }**.css`])
-    .pipe(replace(NAME_TOKEN, DRIVER_NAME))
-    .pipe(gulpConcat(`component.css`, {newLine: '\n;'}))
-    .pipe(gulp.dest(DIST));
-});
-
-gulp.task('server', ['build', 'watch'], function() {
+gulp.task('server', gulp.parallel(['build', 'watch'], function () {
   return gulpConnect.server({
     root: [DIST],
     port: process.env.PORT || 3000,
     https: false,
   });
-});
+}));
+
+gulp.task('default', gulp.series('build'));
