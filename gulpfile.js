@@ -25,7 +25,7 @@ if (!DRIVER_NAME) {
 }
 
 gulp.task('clean', function () {
-  return gulp.src([`./dist`, `./tmp`,], {read: false})
+  return gulp.src([`${DIST}*.js`, `${DIST}*.css`, `${DIST}*.hbs`, `${TMP}*.js`, `${TMP}*.css`, `${TMP}*.hbs`,], {read: false})
     .pipe(clean());
 });
 
