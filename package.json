@@ -1,5 +1,5 @@
 {
-  "name": "ui-cluster-driver-skel",
+  "name": "ui-cluster-driver-linode",
   "version": "0.0.1",
   "description": "Skeleton Rancher UI driver for custom kubernetes cluster drivers",
   "repository": {
@@ -20,9 +20,9 @@
   "homepage": "",
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "babel-plugin-add-module-exports": "^1.0.0",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
-    "@babel/preset-env": "^7.2.3",
     "del": "3.0.0",
     "gulp": "4.0.0",
     "gulp-append": "^0.3.4",

@@ -46,9 +46,17 @@ export default Ember.Component.extend(ClusterDriver, {
     let configField = get(this, 'configField');
 
 
+    
     if ( !config ) {
       config = this.get('globalStore').createRecord({
         type:               configField,
+        accessToken: "haha",
+        apiURL: "",
+        apiVersion: "",
+        region: "",
+        kubernetesVersion: "",
+        tags: [],
+        nodePools: []
       });
 
       set(this, 'cluster.%%DRIVERNAME%%EngineConfig', config);
@@ -59,10 +67,14 @@ export default Ember.Component.extend(ClusterDriver, {
 
 
   actions: {
-    save() {},
-    cancel(){
+    save() {
+      console.log("saveFunc")
+    },
+    cancelFunc(cb){
+      console.log("cancelFunc")
       // probably should not remove this as its what every other driver uses to get back
       get(this, 'router').transitionTo('global-admin.clusters.index');
+      cb(true);
     },
   },
 
