@@ -1,8 +1,46 @@
 <section class="horizontal-form">
-  {{cluster.linodeEngineConfig.accessToken}} hi
-  {{!-- This component shows errors produced by validate() in the component --}}
-  {{top-errors errors=errors}}
-
-  {{!-- This component shows the Create and Cancel buttons --}}
-  {{save-cancel save="save" cancel=close}}
+  {{#accordion-list showExpandAll=false as |al expandFn|}}
+    {{#if (eq step 1)}}
+      {{#accordion-list-item
+        title=accessTitle
+        detail=accessDetail
+        expandAll=expandAll
+        expand=(action expandFn)
+        expandOnInit=true
+      }}
+        <div class="row">
+          <div class="col span-12">
+            <label class="acc-label">
+              {{t "clusterNew.linode.accessToken.label"}}
+              {{field-required}}
+            </label>
+            {{#input-or-display
+              editable=true
+              value=cluster.linodeEngineConfig.accessToken
+            }}
+              {{input
+                type="text"
+                name="accessToken"
+                classNames="form-control"
+                placeholder=(t "clusterNew.linode.accessToken.placeholder")
+                value=cluster.linodeEngineConfig.accessToken
+              }}
+            {{/input-or-display}}
+          </div>
+        </div>
+      {{/accordion-list-item}}
+      {{top-errors errors=errors}}
+      {{save-cancel
+        btnLabel="clusterNew.linode.accessConfig.next"
+        savingLabel="clusterNew.linode.accessConfig.loading"
+        save="save"
+        cancel=close
+      }}
+    {{else}}
+      second step
+    {{/if}}
+  {{/accordion-list}}
+  {{! This component shows errors produced by validate() in the component }}
+  {{! This component shows the Create and Cancel buttons }}
+  {{!-- {{save-cancel save="save" cancel=close}} --}}
 </section>
