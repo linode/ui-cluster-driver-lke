@@ -99,8 +99,19 @@ export default Ember.Component.extend(ClusterDriver, {
 
 
   actions: {
-    save() {
-      console.log("saveFunc")
+    verifyAccessToken(cb) {
+      const token = get(this, "cluster.linodeEngineConfig.accessToken");
+      let errors = get(this, "errors") || [];
+      const intl = get(this, "intl");
+
+      if (!token) {
+        errors.push(intl.t("clusterNew.linode.accessToken.required"));
+        set(this, "errors", errors);
+        cb(false);
+      } else {
+        set(this, "step", 2);
+        cb(true);
+      }
     },
     cancelFunc(cb){
       console.log("cancelFunc")
