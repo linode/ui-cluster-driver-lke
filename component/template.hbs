@@ -2,8 +2,8 @@
   {{#accordion-list showExpandAll=false as |al expandFn|}}
     {{#if (eq step 1)}}
       {{#accordion-list-item
-        title=accessTitle
-        detail=accessDetail
+        title=accessConfigTitle
+        detail=accessConfigDetail
         expandAll=expandAll
         expand=(action expandFn)
         expandOnInit=true
@@ -26,6 +26,7 @@
                 value=cluster.linodeEngineConfig.accessToken
               }}
             {{/input-or-display}}
+            {{cluster.linodeEngineConfig.accessToken}}
           </div>
         </div>
       {{/accordion-list-item}}
@@ -36,8 +37,52 @@
         save="verifyAccessToken"
         cancel=close
       }}
-    {{else}}
-      second step
+    {{else if (eq step 2)}}
+      {{#accordion-list-item
+        title=clusterConfigTitle
+        detail=clusterConfigDetail
+        expandAll=expandAll
+        expand=(action expandFn)
+        expandOnInit=true
+      }}
+        <div class="row">
+          <div class="col span-12">
+            <label class="acc-label">
+              {{t "clusterNew.linode.region.label"}}
+              {{field-required}}
+            </label>
+            {{#input-or-display
+              editable=true
+              value=cluster.linodeEngineConfig.region
+            }}
+              {{new-select
+                class="form-control"
+                content=regionChoises
+                value=cluster.linodeEngineConfig.region
+              }}
+            {{/input-or-display}}
+            {{cluster.linodeEngineConfig.region}}
+          </div>
+
+          <div class="col span-12">
+            <label class="acc-label">
+              {{t "clusterNew.linode.kubernetesVersion.label"}}
+              {{field-required}}
+            </label>
+            {{#input-or-display
+              editable=true
+              value=cluster.linodeEngineConfig.kubernetesVersion
+            }}
+              {{new-select
+                class="form-control"
+                content=k8sVersionChoises
+                value=cluster.linodeEngineConfig.kubernetesVersion
+              }}
+            {{/input-or-display}}
+            {{cluster.linodeEngineConfig.kubernetesVersion}}
+          </div>
+        </div>
+      {{/accordion-list-item}}
     {{/if}}
   {{/accordion-list}}
   {{! This component shows errors produced by validate() in the component }}

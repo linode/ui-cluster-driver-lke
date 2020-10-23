@@ -7,6 +7,8 @@ import ClusterDriver from 'shared/mixins/cluster-driver';
 const LAYOUT;
 /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
 
+import fetch from "fetch";
+
 const languages = {
   'en-us': {
     'clusterNew': {
@@ -21,12 +23,29 @@ const languages = {
           "label": "Access Token",
           "placeholder": "The access token to use for accessing your linode account",
           "required": "Access Token is required"
-        }
+        },
+        'clusterConfig': {
+          'next': 'Proceed to Node pool selection',
+          'loading': 'Saving your cluster configuration',
+          'title': 'Cluster Configuration',
+          'description': 'Clunfigure your cluster'
+        },
+        "region": {
+          "label": "Region",
+          "placeholder": "Select a region for your cluster",
+          "required": "Region is required"
+        },
+        "kubernetesVersion": {
+          "label": "Kubernetes Version",
+          "placeholder": "Select a kubernetes version for your cluster",
+          "required": "Kubernetes Version is required"
+        },
       }
     }
   }
-}
+};
 
+const k8sVersions = [{"id": "1.18"}, {"id": "1.17"}, {"id": "1.15"}, {"id": "1.16"}];
 
 /*!!!!!!!!!!!GLOBAL CONST START!!!!!!!!!!!*/
 // EMBER API Access - if you need access to any of the Ember API's add them here in the same manner rather then import them via modules, since the dependencies exist in rancher we dont want to expor the modules in the amd def
@@ -57,6 +76,18 @@ export default Ember.Component.extend(ClusterDriver, {
   lanChanged: null,
   refresh: false,
 
+
+  regions: fetch("https://api.linode.com/v4/regions").then((resp) => {
+    return resp.json();
+  }).then((data) => {
+    return data.data;
+  }),
+  nodeTypes: fetch("https://api.linode.com/v4/linode/types").then((resp) => {
+    return resp.json();
+  }).then((data) => {
+    return data.data;
+  }),
+
   init() {
     /*!!!!!!!!!!!DO NOT CHANGE START!!!!!!!!!!!*/
     // This does on the fly template compiling, if you mess with this :cry:
@@ -83,10 +114,8 @@ export default Ember.Component.extend(ClusterDriver, {
       config = this.get('globalStore').createRecord({
         type:               configField,
         accessToken: "haha",
-        apiURL: "",
-        apiVersion: "",
-        region: "",
-        kubernetesVersion: "",
+        region: "us-central",
+        kubernetesVersion: "1.18",
         tags: [],
         nodePools: []
       });
@@ -109,6 +138,7 @@ export default Ember.Component.extend(ClusterDriver, {
         set(this, "errors", errors);
         cb(false);
       } else {
+        // fill the regions and types array
         set(this, "step", 2);
         cb(true);
       }
@@ -173,10 +203,37 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   // For Access Token step
-  accessTitle: computed('intl.locale', 'langChanged', function() {
+  accessConfigTitle: computed('intl.locale', 'langChanged', function() {
     return get(this, 'intl').t("clusterNew.linode.accessConfig.title");
   }),
-  accessDetail: computed('intl.locale', 'langChanged', function() {
+  accessConfigDetail: computed('intl.locale', 'langChanged', function() {
     return get(this, 'intl').t("clusterNew.linode.accessConfig.description");
+  }),
+
+  // For Cluster Configuration Step
+  clusterConfigTitle: computed('intl.locale', 'langChanged', function() {
+    return get(this, 'intl').t("clusterNew.linode.clusterConfig.title");
+  }),
+  clusterConfigDetail: computed('intl.locale', 'langChanged', function() {
+    return get(this, 'intl').t("clusterNew.linode.clusterConfig.description");
+  }),
+
+  // for region choises
+  regionChoises: computed('regions', async function() {
+    const ans = await get(this, "regions");
+    return ans.map(e => {
+      return {
+        label: e.id,
+        value: e.id
+      }
+    });
+  }),
+
+  // for kubernetes version
+  k8sVersionChoises: k8sVersions.map(v => {
+    return {
+      label: v.id,
+      value: v.id
+    }
   })
 });
