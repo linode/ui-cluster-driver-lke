@@ -45,13 +45,22 @@ const languages = {
           'loading': 'Creating your cluster',
           'title': 'Node Pool Configuration',
           'description': 'Configure your desired node pools'
-        }
+        },
+        "selectedNodePoolType": {
+          "label": "Select type",
+          "placeholder": "Select a node pool type"
+        },
       }
     }
   }
 };
 
 const k8sVersions = [{"id": "1.18"}, {"id": "1.17"}, {"id": "1.15"}, {"id": "1.16"}];
+
+// for node pools
+const selectedNodePoolType = "";
+const selectedNodePoolObj = {};
+const selectedNodePoolList = [];
 
 /*!!!!!!!!!!!GLOBAL CONST START!!!!!!!!!!!*/
 // EMBER API Access - if you need access to any of the Ember API's add them here in the same manner rather then import them via modules, since the dependencies exist in rancher we dont want to expor the modules in the amd def
@@ -78,7 +87,7 @@ export default Ember.Component.extend(ClusterDriver, {
   session: service(),
   intl: service(),
   
-  step: 1,
+  step: 3,
   lanChanged: null,
   refresh: false,
 
@@ -114,7 +123,10 @@ export default Ember.Component.extend(ClusterDriver, {
     let config      = get(this, 'config');
     let configField = get(this, 'configField');
 
-
+    // for node pools
+    set(this, "selectedNodePoolType", "")
+    set(this, "selectedNodePoolObj", {});
+    set(this, "selectedNodePoolList", []);
     
     if ( !config ) {
       config = this.get('globalStore').createRecord({
@@ -163,6 +175,21 @@ export default Ember.Component.extend(ClusterDriver, {
       get(this, 'router').transitionTo('global-admin.clusters.index');
       cb(true);
     },
+
+    // for node pools
+    addSelectedNodePool() {
+      const selectedNodePoolObj = get(this, "selectedNodePoolObj");
+      const selectedNodePoolList = get(this, "selectedNodePoolList");
+
+      if (selectedNodePoolObj.id) {
+        // add to list
+        selectedNodePoolList.pushObject(selectedNodePoolObj);
+
+        // clear selected
+        set(this, "selectedNodePoolType", "");
+        set(this, "selectedNodePoolObj", {});
+      }
+    }
   },
 
 
@@ -257,5 +284,31 @@ export default Ember.Component.extend(ClusterDriver, {
   }),
   nodePoolConfigDetail: computed('intl.locale', 'langChanged', function() {
     return get(this, 'intl').t("clusterNew.linode.nodePoolConfig.description");
+  }),
+
+  // for node pool choises
+  nodePoolChoises: computed("nodeTypes.[]", "selectedNodePoolList.[]", async function() {
+    const ans = await get(this, "nodeTypes");
+    return ans.filter(np => {
+      // filter out the already selected node pools
+      const selectedNodePoolList = get(this, "selectedNodePoolList");
+      const fnd = selectedNodePoolList.find(snp => snp.id === np.id);
+      if (fnd) return false;
+      else return true;
+    }).map(np => {
+      return {
+        label: np.label,
+        value: np.id
+      }
+    })
+  }),
+  setSelectedNodePoolObj: observer("selectedNodePoolType", async function() {
+    const nodePoolTypes = await get(this, "nodeTypes");
+    const selectedNodePoolType = get(this, "selectedNodePoolType");
+
+    if (selectedNodePoolType) {
+      const ans = nodePoolTypes.find(np => np.id === selectedNodePoolType);
+      set(this, "selectedNodePoolObj", ans);
+    } else set(this, "selectedNodePoolObj", 0);
   }),
 });

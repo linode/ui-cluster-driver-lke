@@ -96,7 +96,74 @@
         expandAll=expandAll
         expand=(action expandFn)
         expandOnInit=true
-      }}{{/accordion-list-item}}
+      }}
+        <div class="row">
+          <div class="col span-4">
+            <label class="acc-label">
+              {{t "clusterNew.linode.selectedNodePoolType.label"}}
+            </label>
+            {{#input-or-display editable=true value=selectedNodePoolType}}
+              {{new-select
+                class="form-control"
+                content=nodePoolChoises
+                value=selectedNodePoolType
+              }}
+            {{/input-or-display}}
+            {{selectedNodePoolType}}
+          </div>
+          <div class="col span-1">
+            <div class="acc-label">
+              Monthly:
+            </div>
+            $
+            {{this.selectedNodePoolObj.price.monthly}}
+          </div>
+          <div class="col span-1">
+            <div class="acc-label">
+              Hourly:
+            </div>
+            $
+            {{this.selectedNodePoolObj.price.hourly}}
+          </div>
+          <div class="col span-1">
+            <div class="acc-label">
+              RAM:
+            </div>
+            {{this.selectedNodePoolObj.memory}}
+            MB
+          </div>
+          <div class="col span-1">
+            <div class="acc-label">
+              CPUs:
+            </div>
+            {{this.selectedNodePoolObj.vcpus}}
+          </div>
+          <div class="col span-1">
+            <div class="acc-label">
+              Storage:
+            </div>
+            {{this.selectedNodePoolObj.disk}}
+            MB
+          </div>
+          <div class="col span-1">
+            <div class="acc-label">
+              Actions
+            </div>
+            <button class="btn bg-primary" {{action "addSelectedNodePool"}}>
+              Add
+            </button>
+          </div>
+        </div>
+        <ul>
+          {{#each this.selectedNodePoolList as |selectedNodePool|}}
+            <li>
+              {{selectedNodePool.id}} {{selectedNodePool.label}}
+            </li>
+            {{else}}
+              Sorry, the list is empty
+          {{/each}}
+        </ul>
+      {{/accordion-list-item}}
       {{top-errors errors=errors}}
       {{save-cancel
         btnLabel="clusterNew.linode.nodePoolConfig.next"
