@@ -63,7 +63,6 @@
             {{/input-or-display}}
             {{cluster.linodeEngineConfig.region}}
           </div>
-
           <div class="col span-12">
             <label class="acc-label">
               {{t "clusterNew.linode.kubernetesVersion.label"}}
@@ -83,6 +82,28 @@
           </div>
         </div>
       {{/accordion-list-item}}
+      {{top-errors errors=errors}}
+      {{save-cancel
+        btnLabel="clusterNew.linode.clusterConfig.next"
+        savingLabel="clusterNew.linode.clusterConfig.loading"
+        save="verifyClusterConfig"
+        cancel=close
+      }}
+    {{else if (eq step 3)}}
+      {{#accordion-list-item
+        title=nodePoolConfigTitle
+        detail=nodePoolConfigDetail
+        expandAll=expandAll
+        expand=(action expandFn)
+        expandOnInit=true
+      }}{{/accordion-list-item}}
+      {{top-errors errors=errors}}
+      {{save-cancel
+        btnLabel="clusterNew.linode.nodePoolConfig.next"
+        savingLabel="clusterNew.linode.nodePoolConfig.loading"
+        save="verifyNodePoolConfig"
+        cancel=close
+      }}
     {{/if}}
   {{/accordion-list}}
   {{! This component shows errors produced by validate() in the component }}

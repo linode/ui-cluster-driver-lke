@@ -40,6 +40,12 @@ const languages = {
           "placeholder": "Select a kubernetes version for your cluster",
           "required": "Kubernetes Version is required"
         },
+        "nodePoolConfig": {
+          'next': 'Create',
+          'loading': 'Creating your cluster',
+          'title': 'Node Pool Configuration',
+          'description': 'Configure your desired node pools'
+        }
       }
     }
   }
@@ -143,6 +149,14 @@ export default Ember.Component.extend(ClusterDriver, {
         cb(true);
       }
     },
+    verifyClusterConfig(cb) {
+      set(this, "step", 3);
+      cb(true);
+    },
+    verifyNodePoolConfig(cb) {
+      set(this, "step", 4);
+      cb(true);
+    },
     cancelFunc(cb){
       console.log("cancelFunc")
       // probably should not remove this as its what every other driver uses to get back
@@ -235,5 +249,13 @@ export default Ember.Component.extend(ClusterDriver, {
       label: v.id,
       value: v.id
     }
-  })
+  }),
+
+  // For Node Pool Configuration Step
+  nodePoolConfigTitle: computed('intl.locale', 'langChanged', function() {
+    return get(this, 'intl').t("clusterNew.linode.nodePoolConfig.title");
+  }),
+  nodePoolConfigDetail: computed('intl.locale', 'langChanged', function() {
+    return get(this, 'intl').t("clusterNew.linode.nodePoolConfig.description");
+  }),
 });
