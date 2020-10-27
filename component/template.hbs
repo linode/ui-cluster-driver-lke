@@ -97,6 +97,7 @@
         expand=(action expandFn)
         expandOnInit=true
       }}
+        {{! select node pool }}
         <div class="row">
           <div class="col span-4">
             <label class="acc-label">
@@ -147,22 +148,135 @@
           </div>
           <div class="col span-1">
             <div class="acc-label">
+              Count:
+            </div>
+            <Input
+              @type="number"
+              @min="1"
+              @value={{this.selectedNodePoolObj.count}}
+            />
+          </div>
+          <div class="col span-1">
+            <div class="acc-label">
               Actions
             </div>
-            <button class="btn bg-primary" {{action "addSelectedNodePool"}}>
-              Add
+            <button
+              class="btn bg-primary icon-btn p-0"
+              {{action "addSelectedNodePool"}}
+            >
+              <span class="darken">
+                <i class="icon icon-plus text-small"></i>
+              </span>
+              <span>
+                Add Node Pool
+              </span>
             </button>
           </div>
         </div>
-        <ul>
-          {{#each this.selectedNodePoolList as |selectedNodePool|}}
-            <li>
-              {{selectedNodePool.id}} {{selectedNodePool.label}}
-            </li>
-            {{else}}
-              Sorry, the list is empty
-          {{/each}}
-        </ul>
+        {{! select node pool end }}
+        {{! show selected node pools }}
+        <div class="ember-view">
+          <div class="header mt-20 clearfix">
+            <div class="pull-left">
+              <h2 class="mb-0">
+                Selected Node Pools
+              </h2>
+            </div>
+          </div>
+          <div class="grid sortable-table ember-view">
+            <table class="fixed grid sortable-table">
+              <thead>
+                <tr class="fixed-header">
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent">
+                      Label
+                    </a>
+                  </th>
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent">
+                      Monthly $
+                    </a>
+                  </th>
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent">
+                      Hourly $
+                    </a>
+                  </th>
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent">
+                      RAM (MB)
+                    </a>
+                  </th>
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent">
+                      CPUs
+                    </a>
+                  </th>
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent">
+                      Storage (MB)
+                    </a>
+                  </th>
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent">
+                      Count
+                    </a>
+                  </th>
+                  <th lass="sortable ember-view" role="columnheader">
+                    <a class="btn bg-transparent"></a>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each this.selectedNodePoolList as |selectedNodePool|}}
+                  <tr class="main-row ember-view">
+                    <td>
+                      {{selectedNodePool.label}}
+                    </td>
+                    <td>
+                      {{selectedNodePool.price.monthly}}
+                    </td>
+                    <td>
+                      {{selectedNodePool.price.hourly}}
+                    </td>
+                    <td>
+                      {{selectedNodePool.memory}}
+                    </td>
+                    <td>
+                      {{selectedNodePool.vcpus}}
+                    </td>
+                    <td>
+                      {{selectedNodePool.disk}}
+                    </td>
+                    <td>
+                      <Input
+                        @type="number"
+                        @min="1"
+                        @value={{selectedNodePool.count}}
+                      />
+                    </td>
+                    <td class="text-center">
+                      <button
+                        class="btn bg-error btn-sm"
+                        {{action "deleteNodePool" selectedNodePool.id}}
+                      >
+                        <i class="icon icon-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                {{else}}
+                  <tr class="main-row ember-view">
+                    <td colspan="8" class="p-10 text-center">
+                      Sorry, node pool list is empty
+                    </td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+            {{ cluster.linodeEngineConfig.nodeTypes }}
+          </div>
+        </div>
+        {{! show selected node pools end }}
       {{/accordion-list-item}}
       {{top-errors errors=errors}}
       {{save-cancel

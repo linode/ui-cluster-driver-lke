@@ -189,6 +189,11 @@ export default Ember.Component.extend(ClusterDriver, {
         set(this, "selectedNodePoolType", "");
         set(this, "selectedNodePoolObj", {});
       }
+    },
+    deleteNodePool(id) {
+      const selectedNodePoolList = get(this, "selectedNodePoolList");
+
+      set(this, "selectedNodePoolList", selectedNodePoolList.filter(n => n.id !== id))
     }
   },
 
@@ -308,7 +313,14 @@ export default Ember.Component.extend(ClusterDriver, {
 
     if (selectedNodePoolType) {
       const ans = nodePoolTypes.find(np => np.id === selectedNodePoolType);
-      set(this, "selectedNodePoolObj", ans);
-    } else set(this, "selectedNodePoolObj", 0);
+      set(this, "selectedNodePoolObj", {...ans, count: 1});
+    } else set(this, "selectedNodePoolObj", {});
   }),
+  setNodeType: observer("selectedNodePoolList.@each.count", function() {
+    const selectedNodePoolList = get(this, "selectedNodePoolList");
+    const nodeTypes = selectedNodePoolList.map(np => {
+      return `${np.id}=${np.count}`
+    })
+    set(this, "cluster.linodeEngineConfig.nodeTypes", nodeTypes);
+  })
 });
