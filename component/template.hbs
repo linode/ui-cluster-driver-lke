@@ -179,7 +179,7 @@
           <div class="header mt-20 clearfix">
             <div class="pull-left">
               <h2 class="mb-0">
-                Selected Node Pools
+                {{t "clusterNew.linode.nodePools.label"}}
               </h2>
             </div>
           </div>
@@ -267,13 +267,16 @@
                 {{else}}
                   <tr class="main-row ember-view">
                     <td colspan="8" class="p-10 text-center">
-                      Sorry, node pool list is empty
+                      {{t "clusterNew.linode.nodePools.empty"}}
                     </td>
                   </tr>
                 {{/each}}
               </tbody>
             </table>
-            {{ cluster.linodeEngineConfig.nodeTypes }}
+            {{ cluster.linodeEngineConfig.nodePools }}<br />
+            {{ cluster.linodeEngineConfig.name }}<br />
+            {{ cluster.linodeEngineConfig.label }}<br />
+            {{ cluster.linodeEngineConfig.description }}
           </div>
         </div>
         {{! show selected node pools end }}
@@ -282,7 +285,7 @@
       {{save-cancel
         btnLabel="clusterNew.linode.nodePoolConfig.next"
         savingLabel="clusterNew.linode.nodePoolConfig.loading"
-        save="verifyNodePoolConfig"
+        save="createCluster"
         cancel=close
       }}
     {{/if}}

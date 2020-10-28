@@ -50,6 +50,12 @@ const languages = {
           "label": "Select type",
           "placeholder": "Select a node pool type"
         },
+        "nodePools": {
+          "label": "Selected Node Pools",
+          "required": "Please add at least one node pool",
+          "empty": "Sorry, node pool list is empty",
+          "countError": "All node counts must be greater than 0."
+        }
       }
     }
   }
@@ -87,7 +93,7 @@ export default Ember.Component.extend(ClusterDriver, {
   session: service(),
   intl: service(),
   
-  step: 3,
+  step: 1,
   lanChanged: null,
   refresh: false,
 
@@ -131,6 +137,9 @@ export default Ember.Component.extend(ClusterDriver, {
     if ( !config ) {
       config = this.get('globalStore').createRecord({
         type:               configField,
+        name: "",
+        label: "",
+        description: "",
         accessToken: "haha",
         region: "us-central",
         kubernetesVersion: "1.18",
@@ -147,8 +156,8 @@ export default Ember.Component.extend(ClusterDriver, {
 
   actions: {
     verifyAccessToken(cb) {
-      const token = get(this, "cluster.linodeEngineConfig.accessToken");
-      let errors = get(this, "errors") || [];
+      const token = get(this, "cluster.%%DRIVERNAME%%EngineConfig.accessToken");
+      let errors = [];
       const intl = get(this, "intl");
 
       if (!token) {
@@ -165,9 +174,14 @@ export default Ember.Component.extend(ClusterDriver, {
       set(this, "step", 3);
       cb(true);
     },
-    verifyNodePoolConfig(cb) {
-      set(this, "step", 4);
-      cb(true);
+    
+    createCluster(cb) {
+      console.log("validating");
+      if (this.verifyNodePoolConfig()) {
+        this.send("driverSave", cb);
+      } else {
+        cb(false);
+      }
     },
     cancelFunc(cb){
       console.log("cancelFunc")
@@ -248,6 +262,16 @@ export default Ember.Component.extend(ClusterDriver, {
     });
   },
 
+  clusterNameChanged: observer('cluster.name', function() {
+    const clusterName = get(this, 'cluster.name');
+    set(this, 'cluster.%%DRIVERNAME%%EngineConfig.name', clusterName);
+    set(this, 'cluster.%%DRIVERNAME%%EngineConfig.label', clusterName);
+  }),
+  clusterDescriptionChanged: observer('cluster.description', function() {
+    const clusterDescription = get(this, 'cluster.description');
+    set(this, 'cluster.%%DRIVERNAME%%EngineConfig.description', clusterDescription);
+  }),
+
   // For Access Token step
   accessConfigTitle: computed('intl.locale', 'langChanged', function() {
     return get(this, 'intl').t("clusterNew.linode.accessConfig.title");
@@ -316,11 +340,31 @@ export default Ember.Component.extend(ClusterDriver, {
       set(this, "selectedNodePoolObj", {...ans, count: 1});
     } else set(this, "selectedNodePoolObj", {});
   }),
-  setNodeType: observer("selectedNodePoolList.@each.count", function() {
+  setNodePools: observer("selectedNodePoolList.@each.count", function() {
     const selectedNodePoolList = get(this, "selectedNodePoolList");
-    const nodeTypes = selectedNodePoolList.map(np => {
+    const nodePools = selectedNodePoolList.map(np => {
       return `${np.id}=${np.count}`
     })
-    set(this, "cluster.linodeEngineConfig.nodeTypes", nodeTypes);
-  })
+    set(this, "cluster.%%DRIVERNAME%%EngineConfig.nodePools", nodePools);
+  }),
+
+  verifyNodePoolConfig() {
+    const intl = get(this, 'intl');
+    const selectedNodePoolList = get(this, "selectedNodePoolList");
+    const errors = [];
+
+    if (selectedNodePoolList.length === 0) {
+      errors.push(intl.t("clusterNew.linode.nodePools.required"));
+      set(this, "errors", errors);
+      return false;
+    } else {
+      const fnd = selectedNodePoolList.find(np => np.count <= 0);
+      if (fnd) {
+        errors.push(intl.t("clusterNew.linode.nodePools.countError"));
+        set(this, "errors", errors);
+        return false;
+      }
+      return true;
+    }
+  }
 });
