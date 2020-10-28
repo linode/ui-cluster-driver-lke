@@ -44,7 +44,8 @@ const languages = {
           'next': 'Create',
           'loading': 'Creating your cluster',
           'title': 'Node Pool Configuration',
-          'description': 'Configure your desired node pools'
+          'description': 'Configure your desired node pools',
+          'upgrade': "Upgrade"
         },
         "selectedNodePoolType": {
           "label": "Select type",
@@ -132,7 +133,7 @@ export default Ember.Component.extend(ClusterDriver, {
     // for node pools
     set(this, "selectedNodePoolType", "")
     set(this, "selectedNodePoolObj", {});
-    set(this, "selectedNodePoolList", []);
+    set(this, "selectedNodePoolList", this.prefillSelectedNodePoolList());
     
     if ( !config ) {
       config = this.get('globalStore').createRecord({
@@ -176,13 +177,21 @@ export default Ember.Component.extend(ClusterDriver, {
     },
     
     createCluster(cb) {
-      console.log("validating");
       if (this.verifyNodePoolConfig()) {
         this.send("driverSave", cb);
       } else {
         cb(false);
       }
     },
+
+    upgradeCluster(cb) {
+      if (this.verifyNodePoolConfig()) {
+        this.send("driverSave", cb);
+      } else {
+        cb(false);
+      }
+    },
+
     cancelFunc(cb){
       console.log("cancelFunc")
       // probably should not remove this as its what every other driver uses to get back
@@ -346,6 +355,8 @@ export default Ember.Component.extend(ClusterDriver, {
       return `${np.id}=${np.count}`
     })
     set(this, "cluster.%%DRIVERNAME%%EngineConfig.nodePools", nodePools);
+
+    set(this, "cluster.%%DRIVERNAME%%EngineConfig.tags", []);
   }),
 
   verifyNodePoolConfig() {
@@ -366,5 +377,24 @@ export default Ember.Component.extend(ClusterDriver, {
       }
       return true;
     }
+  },
+
+  // to prefil selected node pool list for edit mode
+  prefillSelectedNodePoolListObserver: observer("nodeTypes.[]", function() {
+    this.prefillSelectedNodePoolList();
+  }),
+
+  async prefillSelectedNodePoolList() {
+    const nodePools = get(this, "cluster.%%DRIVERNAME%%EngineConfig.nodePools");
+    const nodePoolTypes = await get(this, "nodeTypes");
+
+    console.log({nodePools, nodePoolTypes});
+    set(this, "selectedNodePoolList", nodePools.map(np => {
+      const [npId, cnt] = np.split("=");
+      const fnd = nodePoolTypes.find(npt => npt.id === npId);
+      if (fnd) {
+        return {...fnd, count: cnt};
+      } else return {id: npId, count: cnt, label: npId};
+    }));
   }
 });

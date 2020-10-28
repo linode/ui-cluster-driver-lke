@@ -1,6 +1,6 @@
 <section class="horizontal-form">
   {{#accordion-list showExpandAll=false as |al expandFn|}}
-    {{#if (eq step 1)}}
+    {{#if (and (eq mode "new") eq step 1)}}
       {{#accordion-list-item
         title=accessConfigTitle
         detail=accessConfigDetail
@@ -37,7 +37,7 @@
         save="verifyAccessToken"
         cancel=close
       }}
-    {{else if (eq step 2)}}
+    {{else if (and (eq mode "new") eq step 4)}}
       {{#accordion-list-item
         title=clusterConfigTitle
         detail=clusterConfigDetail
@@ -89,7 +89,7 @@
         save="verifyClusterConfig"
         cancel=close
       }}
-    {{else if (eq step 3)}}
+    {{else if (or (eq mode "edit") eq step 3)}}
       {{#accordion-list-item
         title=nodePoolConfigTitle
         detail=nodePoolConfigDetail
@@ -273,21 +273,35 @@
                 {{/each}}
               </tbody>
             </table>
-            {{ cluster.linodeEngineConfig.nodePools }}<br />
-            {{ cluster.linodeEngineConfig.name }}<br />
-            {{ cluster.linodeEngineConfig.label }}<br />
-            {{ cluster.linodeEngineConfig.description }}
+            {{cluster.linodeEngineConfig.nodePools}}
+            <br />
+            {{cluster.linodeEngineConfig.name}}
+            <br />
+            {{cluster.linodeEngineConfig.label}}
+            <br />
+            {{cluster.linodeEngineConfig.description}}
+            <br />
+            Tags: {{cluster.linodeEngineConfig.tags}}
           </div>
         </div>
         {{! show selected node pools end }}
       {{/accordion-list-item}}
       {{top-errors errors=errors}}
-      {{save-cancel
-        btnLabel="clusterNew.linode.nodePoolConfig.next"
-        savingLabel="clusterNew.linode.nodePoolConfig.loading"
-        save="createCluster"
-        cancel=close
-      }}
+      {{#if (eq mode "edit")}}
+        {{save-cancel
+          btnLabel="clusterNew.linode.nodePoolConfig.upgrade"
+          savingLabel="clusterNew.linode.nodePoolConfig.loading"
+          save="upgradeCluster"
+          cancel=close
+        }}
+      {{else}}
+        {{save-cancel
+          btnLabel="clusterNew.linode.nodePoolConfig.next"
+          savingLabel="clusterNew.linode.nodePoolConfig.loading"
+          save="createCluster"
+          cancel=close
+        }}
+      {{/if}}
     {{/if}}
   {{/accordion-list}}
   {{! This component shows errors produced by validate() in the component }}
