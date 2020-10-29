@@ -41,6 +41,11 @@ const languages = {
           "placeholder": "Select a kubernetes version for your cluster",
           "required": "Kubernetes Version is required"
         },
+        "tags": {
+          "newTag": "New tag",
+          "label": "Tags",
+          "placeholder": "Add a new tag",
+        },
         "nodePoolConfig": {
           'next': 'Create',
           'loading': 'Creating your cluster',
@@ -64,6 +69,9 @@ const languages = {
 };
 
 const k8sVersions = [];
+
+// for tags
+const newTag = "";
 
 // for node pools
 const selectedNodePoolType = "";
@@ -131,6 +139,9 @@ export default Ember.Component.extend(ClusterDriver, {
     let config      = get(this, 'config');
     let configField = get(this, 'configField');
 
+    // for tags
+    set(this, "newTag", "");
+    
     // for node pools
     set(this, "selectedNodePoolType", "")
     set(this, "selectedNodePoolObj", {});
@@ -179,8 +190,6 @@ export default Ember.Component.extend(ClusterDriver, {
 
         if (k8sVersions.status === 200) {
           const k8sVersionsJson = await k8sVersions.json();
-  
-          console.log({data: k8sVersionsJson.data})
           
           set(this, "k8sVersions", k8sVersionsJson.data);
           
@@ -196,6 +205,12 @@ export default Ember.Component.extend(ClusterDriver, {
       }
     },
     verifyClusterConfig(cb) {
+      // verify if tags are not null
+      // if null replace with empty array
+      const tags = get(this, "cluster.%%DRIVERNAME%%EngineConfig.tags");
+      if (!tags) {
+        set(this, "cluster.%%DRIVERNAME%%EngineConfig.tags", []);
+      }
       set(this, "step", 3);
       cb(true);
     },
@@ -210,9 +225,6 @@ export default Ember.Component.extend(ClusterDriver, {
 
     updateCluster(cb) {
       if (this.verifyNodePoolConfig()) {
-        // set the tags to empty array
-        set(this, "cluster.%%DRIVERNAME%%EngineConfig.tags", []);
-        
         this.send("driverSave", cb);
       } else {
         cb(false);
@@ -224,6 +236,22 @@ export default Ember.Component.extend(ClusterDriver, {
       // probably should not remove this as its what every other driver uses to get back
       get(this, 'router').transitionTo('global-admin.clusters.index');
       cb(true);
+    },
+
+    // for tags
+    addNewTag() {
+      const tags = get(this, "cluster.%%DRIVERNAME%%EngineConfig.tags") || [];
+      const newTag = get(this, "newTag");
+
+      if (newTag) {
+        tags.pushObject(newTag);
+        set(this, "cluster.%%DRIVERNAME%%EngineConfig.tags", tags);
+        set(this, "newTag", "");
+      }
+    },
+    deleteTag(idx) {
+      const tags = get(this, "cluster.%%DRIVERNAME%%EngineConfig.tags") || [];
+      set(this, "cluster.%%DRIVERNAME%%EngineConfig.tags", tags.filter((tag, index) => index !== idx));
     },
 
     // for node pools

@@ -42,7 +42,10 @@
         save="verifyAccessToken"
         cancel=close
       }}
-    {{else if (and (eq mode 'new') (eq step 2))}}
+    {{else if
+      (or
+        (and (eq mode "edit") (eq step 1)) (and (eq mode "new") (eq step 2))
+      )}}
       {{#accordion-list-item
         title=clusterConfigTitle
         detail=clusterConfigDetail
@@ -50,40 +53,86 @@
         expand=(action expandFn)
         expandOnInit=true
       }}
-        <div class="row">
-          <div class="col span-12">
-            <label class="acc-label">
-              {{t "clusterNew.linode.region.label"}}
-              {{field-required}}
-            </label>
-            {{#input-or-display
-              editable=true
-              value=cluster.linodeEngineConfig.region
-            }}
-              {{new-select
-                class="form-control"
-                content=regionChoises
+        {{#if (eq mode "new")}}
+          <div class="row">
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.linode.region.label"}}
+                {{field-required}}
+              </label>
+              {{#input-or-display
+                editable=true
                 value=cluster.linodeEngineConfig.region
               }}
-            {{/input-or-display}}
-            {{cluster.linodeEngineConfig.region}}
-          </div>
-          <div class="col span-12">
-            <label class="acc-label">
-              {{t "clusterNew.linode.kubernetesVersion.label"}}
-              {{field-required}}
-            </label>
-            {{#input-or-display
-              editable=true
-              value=cluster.linodeEngineConfig.kubernetesVersion
-            }}
-              {{new-select
-                class="form-control"
-                content=k8sVersionChoises
+                {{new-select
+                  class="form-control"
+                  content=regionChoises
+                  value=cluster.linodeEngineConfig.region
+                }}
+              {{/input-or-display}}
+              {{cluster.linodeEngineConfig.region}}
+            </div>
+            <div class="col span-6">
+              <label class="acc-label">
+                {{t "clusterNew.linode.kubernetesVersion.label"}}
+                {{field-required}}
+              </label>
+              {{#input-or-display
+                editable=true
                 value=cluster.linodeEngineConfig.kubernetesVersion
               }}
+                {{new-select
+                  class="form-control"
+                  content=k8sVersionChoises
+                  value=cluster.linodeEngineConfig.kubernetesVersion
+                }}
+              {{/input-or-display}}
+              {{cluster.linodeEngineConfig.kubernetesVersion}}
+            </div>
+          </div>
+        {{/if}}
+        <div class="row">
+          <div class="header mt-20 clearfix">
+            <div class="pull-left">
+              <h2 class="mb-0">
+                {{t "clusterNew.linode.tags.label"}}
+              </h2>
+            </div>
+          </div>
+          <div class="col span-5">
+            <label class="acc-label">
+              {{t "clusterNew.linode.tags.newTag"}}
+            </label>
+            {{#input-or-display editable=true value=newTag}}
+              {{input
+                type="text"
+                name="tags"
+                classNames="form-control"
+                placeholder=(t "clusterNew.linode.tags.placeholder")
+                value=newTag
+              }}
             {{/input-or-display}}
-            {{cluster.linodeEngineConfig.kubernetesVersion}}
+            {{newTag}}
+          </div>
+          <div class="col span-1">
+            <button class="btn bg-primary btn-sm mt-30" {{action "addNewTag"}}>
+              <i class="icon icon-plus"></i>
+            </button>
+          </div>
+          <div class="col span-6">
+            {{#each cluster.linodeEngineConfig.tags as |tag tagIdx|}}
+              <span class="linode-tag bg-primary">
+                {{tag}}
+              </span>
+              <button
+                class="btn btn-sm bg-error linode-tag-btn"
+                {{action "deleteTag" tagIdx}}
+              >
+                <i class="icon icon-trash"></i>
+              </button>
+              {{else}}
+              No tags added
+            {{/each}}
           </div>
         </div>
       {{/accordion-list-item}}
@@ -94,7 +143,7 @@
         save="verifyClusterConfig"
         cancel=close
       }}
-    {{else if (or (eq mode 'edit') (eq step 3))}}
+    {{else if (eq step 3)}}
       {{#accordion-list-item
         title=nodePoolConfigTitle
         detail=nodePoolConfigDetail

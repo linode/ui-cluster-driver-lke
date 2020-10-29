@@ -1,3 +1,11 @@
+.linode-tag {
+  padding: 4px 10px;
+}
+
+.linode-tag-btn {
+  padding: 5px;
+}
+
 .machine-driver.%%DRIVERNAME%% {
   background-image: url('example.svg');
 }
