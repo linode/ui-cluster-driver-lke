@@ -46,7 +46,7 @@ const languages = {
           'loading': 'Creating your cluster',
           'title': 'Node Pool Configuration',
           'description': 'Configure your desired node pools',
-          'upgrade': "Upgrade"
+          'update': "Update"
         },
         "selectedNodePoolType": {
           "label": "Select type",
@@ -208,8 +208,11 @@ export default Ember.Component.extend(ClusterDriver, {
       }
     },
 
-    upgradeCluster(cb) {
+    updateCluster(cb) {
       if (this.verifyNodePoolConfig()) {
+        // set the tags to empty array
+        set(this, "cluster.%%DRIVERNAME%%EngineConfig.tags", []);
+        
         this.send("driverSave", cb);
       } else {
         cb(false);
@@ -382,8 +385,6 @@ export default Ember.Component.extend(ClusterDriver, {
       return `${np.id}=${np.count}`
     })
     set(this, "cluster.%%DRIVERNAME%%EngineConfig.nodePools", nodePools);
-
-    set(this, "cluster.%%DRIVERNAME%%EngineConfig.tags", []);
   }),
 
   verifyNodePoolConfig() {
