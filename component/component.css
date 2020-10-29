@@ -1,11 +1,29 @@
-.linode-tag {
+.lke-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  color: #fff;
+  border-radius: 4px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  height: 30px;
+}
+.lke-tag span {
   padding: 4px 10px;
 }
-
-.linode-tag-btn {
-  padding: 5px;
+.lke-tag .lke-delete {
+  border: none;
+  color: #fff;
+  box-shadow: none;
+  cursor: pointer;
+  height: 30px;
+  border-radius: 0 4px 4px 0;
+  padding: 0 10px;
+}
+.lke-tag .lke-delete i.icon {
+  font-size: 14px;
 }
 
 .machine-driver.%%DRIVERNAME%% {
-  background-image: url('example.svg');
+  background-image: url("example.svg");
 }

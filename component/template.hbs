@@ -120,19 +120,22 @@
             </button>
           </div>
           <div class="col span-6">
-            {{#each cluster.linodeEngineConfig.tags as |tag tagIdx|}}
-              <span class="linode-tag bg-primary">
-                {{tag}}
-              </span>
-              <button
-                class="btn btn-sm bg-error linode-tag-btn"
-                {{action "deleteTag" tagIdx}}
-              >
-                <i class="icon icon-trash"></i>
-              </button>
+            <div class="lke-tags">
+              {{#each cluster.linodeEngineConfig.tags as |tag tagIdx|}}
+                <!--     single tag start -->
+                <div class="lke-tag bg-primary">
+                  <span>
+                    {{tag}}
+                  </span>
+                  <button class="lke-delete bg-error" {{action "deleteTag" tagIdx}}>
+                    <i class="icon icon-trash"></i>
+                  </button>
+                </div>
+                <!--     single tag end  -->
               {{else}}
-              No tags added
-            {{/each}}
+                No tags added
+              {{/each}}
+            </div>
           </div>
         </div>
       {{/accordion-list-item}}
