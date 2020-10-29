@@ -22,7 +22,8 @@ const languages = {
         "accessToken": {
           "label": "Access Token",
           "placeholder": "The access token to use for accessing your linode account",
-          "required": "Access Token is required"
+          "required": "Access Token is required",
+          "invalid": "Access Token is invalid"
         },
         'clusterConfig': {
           'next': 'Proceed to Node pool selection',
@@ -62,7 +63,7 @@ const languages = {
   }
 };
 
-const k8sVersions = [{"id": "1.18"}, {"id": "1.17"}, {"id": "1.15"}, {"id": "1.16"}];
+const k8sVersions = [];
 
 // for node pools
 const selectedNodePoolType = "";
@@ -141,7 +142,7 @@ export default Ember.Component.extend(ClusterDriver, {
         name: "",
         label: "",
         description: "",
-        accessToken: "haha",
+        accessToken: "",
         region: "us-central",
         kubernetesVersion: "1.18",
         tags: [],
@@ -156,7 +157,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
 
   actions: {
-    verifyAccessToken(cb) {
+    async verifyAccessToken(cb) {
       const token = get(this, "cluster.%%DRIVERNAME%%EngineConfig.accessToken");
       let errors = [];
       const intl = get(this, "intl");
@@ -166,9 +167,32 @@ export default Ember.Component.extend(ClusterDriver, {
         set(this, "errors", errors);
         cb(false);
       } else {
-        // fill the regions and types array
-        set(this, "step", 2);
-        cb(true);
+        // call the kubernets versions api
+        const k8sVersions = await fetch("https://api.linode.com/v4/lke/versions", {
+          method: "GET",
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (k8sVersions.status === 200) {
+          const k8sVersionsJson = await k8sVersions.json();
+  
+          console.log({data: k8sVersionsJson.data})
+          
+          set(this, "k8sVersions", k8sVersionsJson.data);
+          
+          set(this, "step", 2);
+          cb(true);
+      } else if (k8sVersions.status === 401) {
+          // unauthorized
+          // auth token is not valid
+          errors.push(intl.t("clusterNew.linode.accessToken.invalid"));
+          set(this, "errors", errors);
+          cb(false);
+        }
       }
     },
     verifyClusterConfig(cb) {
@@ -309,11 +333,14 @@ export default Ember.Component.extend(ClusterDriver, {
   }),
 
   // for kubernetes version
-  k8sVersionChoises: k8sVersions.map(v => {
-    return {
-      label: v.id,
-      value: v.id
-    }
+  k8sVersionChoises: computed("k8sVersions.[]", function() {
+    const k8sVersions = get(this, "k8sVersions");
+    return k8sVersions.map(v => {
+      return {
+        label: v.id,
+        value: v.id
+      }
+    })
   }),
 
   // For Node Pool Configuration Step
@@ -388,13 +415,16 @@ export default Ember.Component.extend(ClusterDriver, {
     const nodePools = get(this, "cluster.%%DRIVERNAME%%EngineConfig.nodePools");
     const nodePoolTypes = await get(this, "nodeTypes");
 
-    console.log({nodePools, nodePoolTypes});
-    set(this, "selectedNodePoolList", nodePools.map(np => {
-      const [npId, cnt] = np.split("=");
-      const fnd = nodePoolTypes.find(npt => npt.id === npId);
-      if (fnd) {
-        return {...fnd, count: cnt};
-      } else return {id: npId, count: cnt, label: npId};
-    }));
+    if (nodePools && nodePools.length) {
+      set(this, "selectedNodePoolList", nodePools.map(np => {
+        const [npId, cnt] = np.split("=");
+        const fnd = nodePoolTypes.find(npt => npt.id === npId);
+        if (fnd) {
+          return {...fnd, count: cnt};
+        } else return {id: npId, count: cnt, label: npId};
+      }));
+    } else {
+      set(this, "selectedNodePoolList", []);
+    }
   }
 });

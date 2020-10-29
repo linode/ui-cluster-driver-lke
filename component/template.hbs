@@ -1,6 +1,6 @@
 <section class="horizontal-form">
   {{#accordion-list showExpandAll=false as |al expandFn|}}
-    {{#if (and (eq mode "new") eq step 1)}}
+    {{#if (eq step 1)}}
       {{#accordion-list-item
         title=accessConfigTitle
         detail=accessConfigDetail
@@ -37,7 +37,7 @@
         save="verifyAccessToken"
         cancel=close
       }}
-    {{else if (and (eq mode "new") eq step 4)}}
+    {{else if (eq step 2)}}
       {{#accordion-list-item
         title=clusterConfigTitle
         detail=clusterConfigDetail
@@ -89,7 +89,7 @@
         save="verifyClusterConfig"
         cancel=close
       }}
-    {{else if (or (eq mode "edit") eq step 3)}}
+    {{else if (eq step 3)}}
       {{#accordion-list-item
         title=nodePoolConfigTitle
         detail=nodePoolConfigDetail
