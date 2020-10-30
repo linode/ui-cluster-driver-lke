@@ -61,7 +61,8 @@ const languages = {
           "label": "Selected Node Pools",
           "required": "Please add at least one node pool",
           "empty": "Sorry, node pool list is empty",
-          "countError": "All node counts must be greater than 0."
+          "countError": "All node counts must be greater than 0.",
+          "placeholder": "Please select a node type to add"
         }
       }
     }
@@ -116,7 +117,7 @@ export default Ember.Component.extend(ClusterDriver, {
   nodeTypes: fetch("https://api.linode.com/v4/linode/types").then((resp) => {
     return resp.json();
   }).then((data) => {
-    return data.data;
+    return data.data.filter(type => (type.class !== 'nanode' && type.class !== 'gpu'));
   }),
 
   init() {
@@ -384,8 +385,9 @@ export default Ember.Component.extend(ClusterDriver, {
 
   // for node pool choises
   nodePoolChoises: computed("nodeTypes.[]", "selectedNodePoolList.[]", async function() {
+    const intl = get(this, 'intl');
     const ans = await get(this, "nodeTypes");
-    return ans.filter(np => {
+    const filteredAns = ans.filter(np => {
       // filter out the already selected node pools
       const selectedNodePoolList = get(this, "selectedNodePoolList");
       const fnd = selectedNodePoolList.find(snp => snp.id === np.id);
@@ -396,7 +398,8 @@ export default Ember.Component.extend(ClusterDriver, {
         label: np.label,
         value: np.id
       }
-    })
+    });
+    return [{label: intl.t("clusterNew.linode.nodePools.placeholder"), value: ""}, ...filteredAns];
   }),
   setSelectedNodePoolObj: observer("selectedNodePoolType", async function() {
     const nodePoolTypes = await get(this, "nodeTypes");
