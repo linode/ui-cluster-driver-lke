@@ -233,7 +233,6 @@ export default Ember.Component.extend(ClusterDriver, {
     },
 
     cancelFunc(cb){
-      console.log("cancelFunc")
       // probably should not remove this as its what every other driver uses to get back
       get(this, 'router').transitionTo('global-admin.clusters.index');
       cb(true);

@@ -1,10 +1,5 @@
 <section class="horizontal-form">
   {{#accordion-list showExpandAll=false as |al expandFn|}}
-    mode:
-    {{mode}}
-    <br />
-    step:
-    {{step}}
     {{#if (eq step 1)}}
       {{#accordion-list-item
         title=accessConfigTitle
@@ -31,7 +26,6 @@
                 value=cluster.linodeEngineConfig.accessToken
               }}
             {{/input-or-display}}
-            {{cluster.linodeEngineConfig.accessToken}}
           </div>
         </div>
       {{/accordion-list-item}}
@@ -67,7 +61,6 @@
                   value=cluster.linodeEngineConfig.region
                 }}
               {{/input-or-display}}
-              {{cluster.linodeEngineConfig.region}}
             </div>
             <div class="col span-6">
               <label class="acc-label">
@@ -84,7 +77,6 @@
                   value=cluster.linodeEngineConfig.kubernetesVersion
                 }}
               {{/input-or-display}}
-              {{cluster.linodeEngineConfig.kubernetesVersion}}
             </div>
           </div>
         {{/if}}
@@ -109,7 +101,6 @@
                 value=newTag
               }}
             {{/input-or-display}}
-            {{newTag}}
           </div>
           <div class="col span-1">
             <button class="btn bg-primary btn-sm mt-30" {{action "addNewTag"}}>
@@ -167,7 +158,6 @@
                 value=selectedNodePoolType
               }}
             {{/input-or-display}}
-            {{selectedNodePoolType}}
           </div>
           <div class="col span-1">
             <div class="acc-label">
@@ -230,8 +220,6 @@
             </button>
           </div>
         </div>
-        {{! select node pool end }}
-        {{! show selected node pools }}
         <div class="ember-view">
           <div class="header mt-20 clearfix">
             <div class="pull-left">
@@ -330,16 +318,6 @@
                 {{/each}}
               </tbody>
             </table>
-            {{cluster.linodeEngineConfig.nodePools}}
-            <br />
-            {{cluster.linodeEngineConfig.name}}
-            <br />
-            {{cluster.linodeEngineConfig.label}}
-            <br />
-            {{cluster.linodeEngineConfig.description}}
-            <br />
-            Tags:
-            {{cluster.linodeEngineConfig.tags}}
           </div>
         </div>
         {{! show selected node pools end }}
@@ -362,7 +340,4 @@
       {{/if}}
     {{/if}}
   {{/accordion-list}}
-  {{! This component shows errors produced by validate() in the component }}
-  {{! This component shows the Create and Cancel buttons }}
-  {{!-- {{save-cancel save="save" cancel=close}} --}}
 </section>
