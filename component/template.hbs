@@ -160,38 +160,38 @@
             {{/input-or-display}}
           </div>
           <div class="col span-1">
-            <div class="acc-label">
+            <div class="acc-label pb-15">
               Monthly:
             </div>
             $
             {{this.selectedNodePoolObj.price.monthly}}
           </div>
           <div class="col span-1">
-            <div class="acc-label">
+            <div class="acc-label pb-15">
               Hourly:
             </div>
             $
             {{this.selectedNodePoolObj.price.hourly}}
           </div>
           <div class="col span-1">
-            <div class="acc-label">
+            <div class="acc-label pb-15">
               RAM:
             </div>
-            {{this.selectedNodePoolObj.memory}}
-            MB
+            {{this.selectedNodePoolObj.memoryGb}}
+            GB
           </div>
           <div class="col span-1">
-            <div class="acc-label">
+            <div class="acc-label pb-15">
               CPUs:
             </div>
             {{this.selectedNodePoolObj.vcpus}}
           </div>
           <div class="col span-1">
-            <div class="acc-label">
+            <div class="acc-label pb-15">
               Storage:
             </div>
-            {{this.selectedNodePoolObj.disk}}
-            MB
+            {{this.selectedNodePoolObj.diskGb}}
+            GB
           </div>
           <div class="col span-1">
             <div class="acc-label">
@@ -204,7 +204,7 @@
             />
           </div>
           <div class="col span-1">
-            <div class="acc-label">
+            <div class="acc-label pb-10">
               Actions
             </div>
             <button
@@ -249,7 +249,7 @@
                   </th>
                   <th lass="sortable ember-view" role="columnheader">
                     <a class="btn bg-transparent">
-                      RAM (MB)
+                      RAM (GB)
                     </a>
                   </th>
                   <th lass="sortable ember-view" role="columnheader">
@@ -259,7 +259,7 @@
                   </th>
                   <th lass="sortable ember-view" role="columnheader">
                     <a class="btn bg-transparent">
-                      Storage (MB)
+                      Storage (GB)
                     </a>
                   </th>
                   <th lass="sortable ember-view" role="columnheader">
@@ -285,13 +285,13 @@
                       {{selectedNodePool.price.hourly}}
                     </td>
                     <td>
-                      {{selectedNodePool.memory}}
+                      {{selectedNodePool.memoryGb}}
                     </td>
                     <td>
                       {{selectedNodePool.vcpus}}
                     </td>
                     <td>
-                      {{selectedNodePool.disk}}
+                      {{selectedNodePool.diskGb}}
                     </td>
                     <td>
                       <Input

@@ -406,7 +406,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
     if (selectedNodePoolType) {
       const ans = nodePoolTypes.find(np => np.id === selectedNodePoolType);
-      set(this, "selectedNodePoolObj", {...ans, count: 1});
+      set(this, "selectedNodePoolObj", {...ans, count: 1, memoryGb: ans.memory / 1024, diskGb: ans.disk / 1024});
     } else set(this, "selectedNodePoolObj", {});
   }),
   setNodePools: observer("selectedNodePoolList.@each.count", function() {
@@ -457,5 +457,5 @@ export default Ember.Component.extend(ClusterDriver, {
     } else {
       set(this, "selectedNodePoolList", []);
     }
-  }
+  },
 });
