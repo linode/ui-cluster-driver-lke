@@ -25,5 +25,5 @@
 }
 
 .machine-driver.%%DRIVERNAME%% {
-  background-image: url("example.svg");
+  background-image: url("%%DRIVERNAME%%.svg");
 }
