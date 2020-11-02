@@ -13,7 +13,7 @@
         expand=(action expandFn)
         expandOnInit=true
       }}
-        <div class="row">
+        {{!-- <div class="row">
           <div class="col span-12">
             <label class="acc-label">
               {{t "clusterNew.linode.accessToken.label"}}
@@ -31,9 +31,22 @@
                 value=cluster.linodeEngineConfig.accessToken
               }}
             {{/input-or-display}}
-            {{cluster.linodeEngineConfig.accessToken}}
           </div>
-        </div>
+        </div> --}}
+        {{cluster.linodeEngineConfig.accessToken}}
+        {{form-auth-cloud-credential
+          driverName=driverName
+          parseAndCollectErrors=(action "errorHandler")
+          primaryResource=primaryResource
+          cloudCredentialKey="cluster.linodeEngineConfig.accessToken"
+          cloudCredentials=cloudCredentials
+          finishAndSelectCloudCredential=(action
+            "finishAndSelectCloudCredential"
+          )
+          progressStep=(action "authLinode")
+          cancel=(action "cancel")
+          createLabel="modalAddCloudKey.linode.authAccountButton"
+        }}
       {{/accordion-list-item}}
       {{top-errors errors=errors}}
       {{save-cancel
@@ -127,7 +140,10 @@
                   <span>
                     {{tag}}
                   </span>
-                  <button class="lke-delete bg-error" {{action "deleteTag" tagIdx}}>
+                  <button
+                    class="lke-delete bg-error"
+                    {{action "deleteTag" tagIdx}}
+                  >
                     <i class="icon icon-trash"></i>
                   </button>
                 </div>

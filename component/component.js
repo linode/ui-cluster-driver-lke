@@ -21,6 +21,7 @@ const languages = {
         },
         "accessToken": {
           "label": "Access Token",
+          'create': 'Create Credential',
           "placeholder": "The access token to use for accessing your linode account",
           "required": "Access Token is required",
           "invalid": "Access Token is invalid"
@@ -87,7 +88,7 @@ const get          = Ember.get;
 const set          = Ember.set;
 const alias        = Ember.computed.alias;
 const service      = Ember.inject.service;
-const all          = Ember.RSVP.all;
+const hash         = Ember.RSVP.hash;
 const next         = Ember.run.next;
 
 /*!!!!!!!!!!!GLOBAL CONST END!!!!!!!!!!!*/
@@ -103,6 +104,7 @@ export default Ember.Component.extend(ClusterDriver, {
   /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
   session: service(),
   intl: service(),
+  linode: service(),
   
   step: 1,
   lanChanged: null,
@@ -155,6 +157,7 @@ export default Ember.Component.extend(ClusterDriver, {
         label: "",
         description: "",
         accessToken: "",
+        cloudCredentialId: "",
         region: "us-central",
         kubernetesVersion: "1.18",
         tags: [],
@@ -169,6 +172,63 @@ export default Ember.Component.extend(ClusterDriver, {
 
 
   actions: {
+    errorHandler(err, shouldClearPreviousErrors = false) {
+      let { errors } = this;
+
+      if (shouldClearPreviousErrors) {
+        errors = set(this, 'errors', []);
+      }
+
+      if (errors) {
+        if (Array.isArray(err)) {
+          errors.pushObjects(err);
+        } else {
+          errors.pushObject(err);
+        }
+      } else {
+        errors = [err];
+      }
+
+      set(this, 'errors', errors);
+    },
+    finishAndSelectCloudCredential(cred) {
+      console.log("hi");
+      if (cred) {
+        console.log("cred", cred);
+        set(this, "cluster.%%DRIVERNAME%%EngineConfig.accessToken", get(cred, 'id'));
+
+        this.send('authLinode');
+      }
+    },
+    authLinode(cb) {
+      const auth = {
+        type: 'cloud',
+        token: get(this, 'cluster.%%DRIVERNAME%%EngineConfig.accessToken'),
+      };
+      hash({
+        k8sVersions: this.linode.request(auth, 'lke/versions'),
+      }).then((responses) => {
+        console.log({responses});
+        this.setProperties({
+          errors: [],
+          step: 2,
+          k8sVersions: responses.k8sVersions.data
+        });
+      }).catch((err) => {
+        console.log("error", err);
+        let errors = get(this, 'errors') || [];
+
+        if (err && err.body && err.body.errors && err.body.errors[0]) {
+          errors.push(`Error received from Linode: ${ err.body.errors[0].reason }`);
+        } else {
+          errors.push(`Error received from Linode`);
+        }
+
+        this.setProperties({ errors, });
+
+        // cb(false);
+      });
+    },
     async verifyAccessToken(cb) {
       const token = get(this, "cluster.%%DRIVERNAME%%EngineConfig.accessToken");
       let errors = [];
@@ -185,7 +245,7 @@ export default Ember.Component.extend(ClusterDriver, {
           withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'x-api-cattleauth-header': `Bearer credID=${token} passwordField=token`
           }
         });
 
