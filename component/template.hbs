@@ -5,7 +5,7 @@
     <br />
     step:
     {{step}}
-    {{#if (and (eq mode "new") (eq step 1))}}
+    {{#if (eq step 1)}}
       {{#accordion-list-item
         title=accessConfigTitle
         detail=accessConfigDetail
@@ -24,7 +24,7 @@
               value=cluster.linodeEngineConfig.accessToken
             }}
               {{input
-                type="text"
+                type="password"
                 name="accessToken"
                 classNames="form-control"
                 placeholder=(t "clusterNew.linode.accessToken.placeholder")
@@ -42,10 +42,7 @@
         save="verifyAccessToken"
         cancel=close
       }}
-    {{else if
-      (or
-        (and (eq mode "edit") (eq step 1)) (and (eq mode "new") (eq step 2))
-      )}}
+    {{else if (eq step 2)}}
       {{#accordion-list-item
         title=clusterConfigTitle
         detail=clusterConfigDetail
@@ -127,7 +124,10 @@
                   <span>
                     {{tag}}
                   </span>
-                  <button class="lke-delete bg-error" {{action "deleteTag" tagIdx}}>
+                  <button
+                    class="lke-delete bg-error"
+                    {{action "deleteTag" tagIdx}}
+                  >
                     <i class="icon icon-trash"></i>
                   </button>
                 </div>
