@@ -112,7 +112,7 @@ export default Ember.Component.extend(ClusterDriver, {
   regions: fetch("https://api.linode.com/v4/regions").then((resp) => {
     return resp.json();
   }).then((data) => {
-    return data.data;
+    return data.data.filter(region => (region.status === "ok" && region.capabilities.includes("Kubernetes")));
   }),
   nodeTypes: fetch("https://api.linode.com/v4/linode/types").then((resp) => {
     return resp.json();
