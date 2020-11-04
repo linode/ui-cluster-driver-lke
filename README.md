@@ -13,31 +13,6 @@ Rancher Cluster Driver UI for the [Linode Kubernetes Engine](https://www.linode.
 * Wait for the driver to become "Active"
 * Go to Clusters -> Add Cluster, your driver and custom UI should show up.
 
-## Setup
-
-These steps are still useful in Rancher v2.0.x where the Linode Node Driver is not already included.
-
-* Add a Machine Driver in Rancher 2.0.x (Global -> Node Drivers)
-  * Name: `Linode`
-  * Download URL:
-
-    `https://github.com/linode/docker-machine-driver-linode/releases/download/v0.1.7/docker-machine-driver-linode_linux-amd64.zip`
-
-  * Custom UI URL (Note: v0.3.0-alpha.1 and greater require Rancher 2.2.3+ ):
-
-    `https://linode.github.io/rancher-ui-driver-linode/releases/v0.2.0/component.js`
-
-  * Checksum
-
-    `faaf1d7d53b55a369baeeb0855b069921a36131868fe3641eb595ac1ff4cf16f`
-
-  * Whitelist Domains:
-
-    `linode.github.io`
-
-* Wait for the driver to become "Active"
-* Go to Clusters -> Add Cluster, the driver and custom UI should show up.
-
 ## Development
 
 This package contains a small web-server that will serve up the custom driver UI at `http://localhost:3000/component.js`.  You can run this while developing and point the Rancher settings there.
