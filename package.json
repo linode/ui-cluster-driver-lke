@@ -19,9 +19,9 @@
   },
   "homepage": "",
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
-    "babel-plugin-add-module-exports": "^1.0.0",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "babel-plugin-transform-es2015-modules-amd": "^6.24.1",
     "del": "3.0.0",
     "gulp": "4.0.0",
