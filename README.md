@@ -8,8 +8,9 @@ Rancher Cluster Driver UI for the [Linode Kubernetes Engine](https://www.linode.
 
 * Add a Cluster Driver in Rancher 2.0 (Global -> Custom Drivers -> Cluster Drivers)
   * Name: Your `DRIVERNAME` (see above).
-  * Download URL: The URL for the driver binary (e.g. `https://github.com/linode/kontainer-engine-driver-linode/releases/download/v1.0.0/kontainer-engine-driver-linode-v1.0.0-linux-amd64.tar.gz`)
-  * Custom UI URL: The URL you uploaded the `dist` folder to, e.g. `https://github.com/linode/ui-cluster-driver-linode/releases/download/v1.0.0/component.js`)
+  * Download URL: The URL for the driver binary (e.g. `https://github.com/linode/kontainer-engine-driver-linode/releases/download/v0.0.1/kontainer-engine-driver-linode-linux-amd64`)
+  * Custom UI URL: The URL you uploaded the `dist` folder to, e.g. `https://github.com/linode/ui-cluster-driver-linode/releases/download/v0.0.1/component.js`)
+  * Whitelist Domains: `github.com`
 * Wait for the driver to become "Active"
 * Go to Clusters -> Add Cluster, your driver and custom UI should show up.
 
