@@ -1,5 +1,5 @@
 {
-  "name": "ui-cluster-driver-linode",
+  "name": "ui-cluster-driver-lke",
   "version": "0.0.1",
   "description": "Linode Rancher UI driver for LKE",
   "repository": {

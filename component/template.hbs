@@ -11,19 +11,19 @@
         <div class="row">
           <div class="col span-12">
             <label class="acc-label">
-              {{t "clusterNew.linode.accessToken.label"}}
+              {{t "clusterNew.linodelke.accessToken.label"}}
               {{field-required}}
             </label>
             {{#input-or-display
               editable=true
-              value=cluster.linodeEngineConfig.accessToken
+              value=cluster.lkeEngineConfig.accessToken
             }}
               {{input
                 type="password"
                 name="accessToken"
                 classNames="form-control"
-                placeholder=(t "clusterNew.linode.accessToken.placeholder")
-                value=cluster.linodeEngineConfig.accessToken
+                placeholder=(t "clusterNew.linodelke.accessToken.placeholder")
+                value=cluster.lkeEngineConfig.accessToken
               }}
             {{/input-or-display}}
           </div>
@@ -31,8 +31,8 @@
       {{/accordion-list-item}}
       {{top-errors errors=errors}}
       {{save-cancel
-        btnLabel="clusterNew.linode.accessConfig.next"
-        savingLabel="clusterNew.linode.accessConfig.loading"
+        btnLabel="clusterNew.linodelke.accessConfig.next"
+        savingLabel="clusterNew.linodelke.accessConfig.loading"
         save="verifyAccessToken"
         cancel=close
       }}
@@ -48,33 +48,33 @@
           <div class="row">
             <div class="col span-6">
               <label class="acc-label">
-                {{t "clusterNew.linode.region.label"}}
+                {{t "clusterNew.linodelke.region.label"}}
                 {{field-required}}
               </label>
               {{#input-or-display
                 editable=true
-                value=cluster.linodeEngineConfig.region
+                value=cluster.lkeEngineConfig.region
               }}
                 {{new-select
                   class="form-control"
                   content=regionChoises
-                  value=cluster.linodeEngineConfig.region
+                  value=cluster.lkeEngineConfig.region
                 }}
               {{/input-or-display}}
             </div>
             <div class="col span-6">
               <label class="acc-label">
-                {{t "clusterNew.linode.kubernetesVersion.label"}}
+                {{t "clusterNew.linodelke.kubernetesVersion.label"}}
                 {{field-required}}
               </label>
               {{#input-or-display
                 editable=true
-                value=cluster.linodeEngineConfig.kubernetesVersion
+                value=cluster.lkeEngineConfig.kubernetesVersion
               }}
                 {{new-select
                   class="form-control"
                   content=k8sVersionChoises
-                  value=cluster.linodeEngineConfig.kubernetesVersion
+                  value=cluster.lkeEngineConfig.kubernetesVersion
                 }}
               {{/input-or-display}}
             </div>
@@ -84,20 +84,20 @@
           <div class="header mt-20 clearfix">
             <div class="pull-left">
               <h2 class="mb-0">
-                {{t "clusterNew.linode.tags.label"}}
+                {{t "clusterNew.linodelke.tags.label"}}
               </h2>
             </div>
           </div>
           <div class="col span-5">
             <label class="acc-label">
-              {{t "clusterNew.linode.tags.newTag"}}
+              {{t "clusterNew.linodelke.tags.newTag"}}
             </label>
             {{#input-or-display editable=true value=newTag}}
               {{input
                 type="text"
                 name="tags"
                 classNames="form-control"
-                placeholder=(t "clusterNew.linode.tags.placeholder")
+                placeholder=(t "clusterNew.linodelke.tags.placeholder")
                 value=newTag
               }}
             {{/input-or-display}}
@@ -109,7 +109,7 @@
           </div>
           <div class="col span-6">
             <div class="lke-tags">
-              {{#each cluster.linodeEngineConfig.tags as |tag tagIdx|}}
+              {{#each cluster.lkeEngineConfig.tags as |tag tagIdx|}}
                 <!--     single tag start -->
                 <div class="lke-tag bg-primary">
                   <span>
@@ -132,8 +132,8 @@
       {{/accordion-list-item}}
       {{top-errors errors=errors}}
       {{save-cancel
-        btnLabel="clusterNew.linode.clusterConfig.next"
-        savingLabel="clusterNew.linode.clusterConfig.loading"
+        btnLabel="clusterNew.linodelke.clusterConfig.next"
+        savingLabel="clusterNew.linodelke.clusterConfig.loading"
         save="verifyClusterConfig"
         cancel=close
       }}
@@ -149,7 +149,7 @@
         <div class="row">
           <div class="col span-4">
             <label class="acc-label">
-              {{t "clusterNew.linode.selectedNodePoolType.label"}}
+              {{t "clusterNew.linodelke.selectedNodePoolType.label"}}
             </label>
             {{#input-or-display editable=true value=selectedNodePoolType}}
               {{new-select
@@ -224,7 +224,7 @@
           <div class="header mt-20 clearfix">
             <div class="pull-left">
               <h2 class="mb-0">
-                {{t "clusterNew.linode.nodePools.label"}}
+                {{t "clusterNew.linodelke.nodePools.label"}}
               </h2>
             </div>
           </div>
@@ -312,7 +312,7 @@
                 {{else}}
                   <tr class="main-row ember-view">
                     <td colspan="8" class="p-10 text-center">
-                      {{t "clusterNew.linode.nodePools.empty"}}
+                      {{t "clusterNew.linodelke.nodePools.empty"}}
                     </td>
                   </tr>
                 {{/each}}
@@ -325,15 +325,15 @@
       {{top-errors errors=errors}}
       {{#if (eq mode "edit")}}
         {{save-cancel
-          btnLabel="clusterNew.linode.nodePoolConfig.update"
-          savingLabel="clusterNew.linode.nodePoolConfig.loading"
+          btnLabel="clusterNew.linodelke.nodePoolConfig.update"
+          savingLabel="clusterNew.linodelke.nodePoolConfig.loading"
           save="updateCluster"
           cancel=close
         }}
       {{else}}
         {{save-cancel
-          btnLabel="clusterNew.linode.nodePoolConfig.next"
-          savingLabel="clusterNew.linode.nodePoolConfig.loading"
+          btnLabel="clusterNew.linodelke.nodePoolConfig.next"
+          savingLabel="clusterNew.linodelke.nodePoolConfig.loading"
           save="createCluster"
           cancel=close
         }}

@@ -12,16 +12,16 @@ import fetch from "fetch";
 const languages = {
   'en-us': {
     'clusterNew': {
-      'linode': {
+      'linodelke': {
         'accessConfig': {
           'next': 'Proceed to Cluster Configuration',
           'loading': 'Verifying your access token',
           'title': 'Linode Account Access Configuration',
-          'description': 'Provide us with the access token that will be used to access your linode account'
+          'description': 'Provide us with the access token that will be used to access your Linode account'
         },
         "accessToken": {
           "label": "Access Token",
-          "placeholder": "The access token to use for accessing your linode account",
+          "placeholder": "The access token to use for accessing your Linode account",
           "required": "Access Token is required",
           "invalid": "Access Token is invalid"
         },
@@ -175,7 +175,7 @@ export default Ember.Component.extend(ClusterDriver, {
       const intl = get(this, "intl");
 
       if (!token) {
-        errors.push(intl.t("clusterNew.linode.accessToken.required"));
+        errors.push(intl.t("clusterNew.linodelke.accessToken.required"));
         set(this, "errors", errors);
         cb(false);
       } else {
@@ -199,7 +199,7 @@ export default Ember.Component.extend(ClusterDriver, {
       } else if (k8sVersions.status === 401) {
           // unauthorized
           // auth token is not valid
-          errors.push(intl.t("clusterNew.linode.accessToken.invalid"));
+          errors.push(intl.t("clusterNew.linodelke.accessToken.invalid"));
           set(this, "errors", errors);
           cb(false);
         }
@@ -338,18 +338,18 @@ export default Ember.Component.extend(ClusterDriver, {
 
   // For Access Token step
   accessConfigTitle: computed('intl.locale', 'langChanged', function() {
-    return get(this, 'intl').t("clusterNew.linode.accessConfig.title");
+    return get(this, 'intl').t("clusterNew.linodelke.accessConfig.title");
   }),
   accessConfigDetail: computed('intl.locale', 'langChanged', function() {
-    return get(this, 'intl').t("clusterNew.linode.accessConfig.description");
+    return get(this, 'intl').t("clusterNew.linodelke.accessConfig.description");
   }),
 
   // For Cluster Configuration Step
   clusterConfigTitle: computed('intl.locale', 'langChanged', function() {
-    return get(this, 'intl').t("clusterNew.linode.clusterConfig.title");
+    return get(this, 'intl').t("clusterNew.linodelke.clusterConfig.title");
   }),
   clusterConfigDetail: computed('intl.locale', 'langChanged', function() {
-    return get(this, 'intl').t("clusterNew.linode.clusterConfig.description");
+    return get(this, 'intl').t("clusterNew.linodelke.clusterConfig.description");
   }),
 
   // for region choises
@@ -376,10 +376,10 @@ export default Ember.Component.extend(ClusterDriver, {
 
   // For Node Pool Configuration Step
   nodePoolConfigTitle: computed('intl.locale', 'langChanged', function() {
-    return get(this, 'intl').t("clusterNew.linode.nodePoolConfig.title");
+    return get(this, 'intl').t("clusterNew.linodelke.nodePoolConfig.title");
   }),
   nodePoolConfigDetail: computed('intl.locale', 'langChanged', function() {
-    return get(this, 'intl').t("clusterNew.linode.nodePoolConfig.description");
+    return get(this, 'intl').t("clusterNew.linodelke.nodePoolConfig.description");
   }),
 
   // for node pool choises
@@ -398,7 +398,7 @@ export default Ember.Component.extend(ClusterDriver, {
         value: np.id
       }
     });
-    return [{label: intl.t("clusterNew.linode.nodePools.placeholder"), value: ""}, ...filteredAns];
+    return [{label: intl.t("clusterNew.linodelke.nodePools.placeholder"), value: ""}, ...filteredAns];
   }),
   setSelectedNodePoolObj: observer("selectedNodePoolType", async function() {
     const nodePoolTypes = await get(this, "nodeTypes");
@@ -423,13 +423,13 @@ export default Ember.Component.extend(ClusterDriver, {
     const errors = [];
 
     if (selectedNodePoolList.length === 0) {
-      errors.push(intl.t("clusterNew.linode.nodePools.required"));
+      errors.push(intl.t("clusterNew.linodelke.nodePools.required"));
       set(this, "errors", errors);
       return false;
     } else {
       const fnd = selectedNodePoolList.find(np => np.count <= 0);
       if (fnd) {
-        errors.push(intl.t("clusterNew.linode.nodePools.countError"));
+        errors.push(intl.t("clusterNew.linodelke.nodePools.countError"));
         set(this, "errors", errors);
         return false;
       }
