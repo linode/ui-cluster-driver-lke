@@ -1,4 +1,4 @@
-# ui-cluster-driver-linode
+# ui-cluster-driver-lke
 
 Rancher Cluster Driver UI for the [Linode Kubernetes Engine](https://www.linode.com/products/kubernetes/)
 
@@ -7,8 +7,8 @@ Rancher Cluster Driver UI for the [Linode Kubernetes Engine](https://www.linode.
 <!-- TODO: not needed in Rancher x.x+ -->
 
 * Add a Cluster Driver in Rancher 2.0 (Global -> Tools -> Drivers -> Add Cluster Driver)
-  * Download URL: The URL for the driver binary (e.g. `https://github.com/linode/kontainer-engine-driver-linode/releases/download/v0.0.1/kontainer-engine-driver-linode-linux-amd64`)
-  * Custom UI URL: The URL you uploaded the `dist` folder to, e.g. `https://github.com/linode/ui-cluster-driver-linode/releases/download/v0.0.1/component.js`)
+  * Download URL: The URL for the driver binary (e.g. `https://github.com/linode/kontainer-engine-driver-lke/releases/download/v0.0.1/kontainer-engine-driver-lke-linux-amd64`)
+  * Custom UI URL: The URL you uploaded the `dist` folder to, e.g. `https://github.com/linode/ui-cluster-driver-lke/releases/download/v0.0.1/component.js`)
   * Whitelist Domains: `github.com`
 * Wait for the driver to become "Active"
 * Go to Clusters -> Add Cluster, the Linode driver and UI should show up.
@@ -32,7 +32,7 @@ For other users to see your driver, you need to build it and host the output on 
 
 ### Contribution Guidelines
 
-Would you like to improve the `ui-cluster-driver-linode` module? Please start [here](https://github.com/linode/ui-cluster-driver-linode/blob/master/.github/CONTRIBUTING.md).
+Would you like to improve the `ui-cluster-driver-lke` module? Please start [here](https://github.com/linode/ui-cluster-driver-lke/blob/master/.github/CONTRIBUTING.md).
 
 
 ### Join us on Slack
