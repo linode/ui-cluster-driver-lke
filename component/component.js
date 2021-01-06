@@ -7,8 +7,6 @@ import ClusterDriver from 'shared/mixins/cluster-driver';
 const LAYOUT;
 /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
 
-import fetch from "fetch";
-
 const languages = {
   'en-us': {
     'clusterNew': {
@@ -87,7 +85,7 @@ const get          = Ember.get;
 const set          = Ember.set;
 const alias        = Ember.computed.alias;
 const service      = Ember.inject.service;
-const all          = Ember.RSVP.all;
+const hash         = Ember.RSVP.hash;
 const next         = Ember.run.next;
 
 /*!!!!!!!!!!!GLOBAL CONST END!!!!!!!!!!!*/
@@ -103,22 +101,11 @@ export default Ember.Component.extend(ClusterDriver, {
   /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
   session: service(),
   intl: service(),
+  linode: service(),
   
   step: 1,
   lanChanged: null,
   refresh: false,
-
-
-  regions: fetch("https://api.linode.com/v4/regions").then((resp) => {
-    return resp.json();
-  }).then((data) => {
-    return data.data.filter(region => (region.status === "ok" && region.capabilities.includes("Kubernetes")));
-  }),
-  nodeTypes: fetch("https://api.linode.com/v4/linode/types").then((resp) => {
-    return resp.json();
-  }).then((data) => {
-    return data.data.filter(type => (type.class !== 'nanode' && type.class !== 'gpu'));
-  }),
 
   init() {
     /*!!!!!!!!!!!DO NOT CHANGE START!!!!!!!!!!!*/
@@ -167,42 +154,42 @@ export default Ember.Component.extend(ClusterDriver, {
 
   config: alias('cluster.%%DRIVERNAME%%EngineConfig'),
 
-
   actions: {
-    async verifyAccessToken(cb) {
-      const token = get(this, "cluster.%%DRIVERNAME%%EngineConfig.accessToken");
+    verifyAccessToken(cb) {
+      const auth = {
+        token: get(this, "cluster.%%DRIVERNAME%%EngineConfig.accessToken"),
+      };
       let errors = [];
       const intl = get(this, "intl");
 
-      if (!token) {
+      if (!auth.token) {
         errors.push(intl.t("clusterNew.linodelke.accessToken.required"));
         set(this, "errors", errors);
         cb(false);
       } else {
-        // call the kubernets versions api
-        const k8sVersions = await fetch("https://api.linode.com/v4/lke/versions", {
-          method: "GET",
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (k8sVersions.status === 200) {
-          const k8sVersionsJson = await k8sVersions.json();
-          
-          set(this, "k8sVersions", k8sVersionsJson.data);
-          
-          set(this, "step", 2);
+        hash({
+          regions: this.linode.request(auth, 'regions'),
+          nodeTypes: this.linode.request(auth, 'linode/types'),
+          k8sVersions: this.linode.request(auth, 'lke/versions'),
+        }).then((responses) => {
+          this.setProperties({
+            errors: [],
+            step: 2,
+            regions: responses.regions.data.filter(region => (region.status === "ok" && region.capabilities.includes("Kubernetes"))),
+            nodeTypes: responses.nodeTypes.data.filter(type => (type.class !== 'nanode' && type.class !== 'gpu')),
+            k8sVersions: responses.k8sVersions.data,
+          });
           cb(true);
-      } else if (k8sVersions.status === 401) {
-          // unauthorized
-          // auth token is not valid
-          errors.push(intl.t("clusterNew.linodelke.accessToken.invalid"));
-          set(this, "errors", errors);
+        }).catch((err) => {
+          if (err && err.body && err.body.errors && err.body.errors[0]) {
+            errors.push(`Error received from Linode: ${ err.body.errors[0].reason }`);
+          } else {
+            errors.push(`Error received from Linode`);
+          }
+
+          this.setProperties({ errors, });
           cb(false);
-        }
+        });
       }
     },
     verifyClusterConfig(cb) {
