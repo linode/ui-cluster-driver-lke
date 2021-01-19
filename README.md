@@ -1,3 +1,5 @@
+This project has been merged into https://github.com/rancher/ui
+
 # ui-cluster-driver-lke
 
 Rancher Cluster Driver UI for the [Linode Kubernetes Engine](https://www.linode.com/products/kubernetes/)
